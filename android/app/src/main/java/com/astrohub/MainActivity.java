@@ -1,4 +1,4 @@
-package com.astrohub;
+package com.hkm.astrohub;
 
 import com.facebook.react.ReactActivity;
 
