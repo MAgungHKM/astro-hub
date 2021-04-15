@@ -28,9 +28,10 @@ const SignInScreen = ({navigation}) => {
   const [initialPasswordState, setInitialPasswordState] = useState(true);
   const [secureTextEntry, setSecureTextEntry] = useState(true);
 
-  const _logo = useRef(null);
+  const _form = useRef(null);
   const _credit = useRef(null);
   const _footer = useRef(null);
+  const _creditContainer = useRef(null);
   const _username = useRef(null);
   const _userCheck = useRef(null);
   const _password = useRef(null);
@@ -66,7 +67,12 @@ const SignInScreen = ({navigation}) => {
     }
   };
 
-  const handleSignIn = (username, password) => console.log('Signing In');
+  const handleSignIn = () => console.log('Signing In');
+
+  const handleSignUp = () => {
+    _footer.current.fadeOutDownBig();
+    _form.current.fadeOutUpBig().then(() => navigation.replace('SignUp'));
+  };
 
   return (
     <MyView style={styles.container}>
@@ -76,7 +82,7 @@ const SignInScreen = ({navigation}) => {
         style={styles.header}
         animation="fadeInDownBig"
         delay={200}
-        ref={_logo}>
+        ref={_form}>
         <Card theme={{roundness: 16}}>
           <Animatable.View animation="fadeIn" delay={1100}>
             <Card.Title
@@ -222,7 +228,7 @@ const SignInScreen = ({navigation}) => {
               <TouchableRipple
                 style={styles.button}
                 borderless={true}
-                onPress={() => handleSignIn(username, password)}>
+                onPress={handleSignIn}>
                 <Title style={[styles.cardTitle, {color: 'white'}]}>
                   Sign In
                 </Title>
@@ -252,7 +258,7 @@ const SignInScreen = ({navigation}) => {
               <TouchableRipple
                 style={styles.button}
                 borderless={true}
-                onPress={() => handleSignIn(username, password)}>
+                onPress={handleSignUp}>
                 <Title style={[styles.cardTitle, {color: PRIMARY_COLOR}]}>
                   Sign Up
                 </Title>
@@ -266,10 +272,11 @@ const SignInScreen = ({navigation}) => {
         style={styles.footer}
         animation="fadeInUp"
         delay={300}
-        onAnimationEnd={() => _footer.current.fadeIn()}>
+        onAnimationEnd={() => _creditContainer.current.fadeIn()}
+        ref={_footer}>
         <Title style={styles.title}>{'D E V E L O P E D   B Y'}</Title>
 
-        <Animatable.View animation="fadeOutDownBig" ref={_footer}>
+        <Animatable.View animation="fadeOutDownBig" ref={_creditContainer}>
           <Animatable.Image
             animation="pulse"
             iterationCount="infinite"

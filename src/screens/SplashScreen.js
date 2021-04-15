@@ -21,7 +21,7 @@ const SplashScreen = ({navigation}) => {
       _snapi.current.pulse();
       _logo.current.tada().then(() => {
         _footer.current.fadeOutDownBig();
-        _logo.current.bounceOut().then(() => navigation.navigate('SignIn'));
+        _logo.current.bounceOut().then(() => navigation.replace('SignIn'));
       });
     }, 2000);
   }, []);
