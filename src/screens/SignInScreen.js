@@ -83,7 +83,7 @@ const SignInScreen = ({navigation}) => {
         animation="fadeInDownBig"
         delay={200}
         ref={_form}>
-        <Card theme={{roundness: 16}}>
+        <Card theme={{roundness: 16}} style={styles.card}>
           <Animatable.View animation="fadeIn" delay={1100}>
             <Card.Title
               title="Welcome to Astro Hub!"
@@ -116,14 +116,14 @@ const SignInScreen = ({navigation}) => {
                 value={username}
                 left={
                   <TextInput.Icon
-                    name={() => (
-                      <Feather name="user" color={usernameColor} size={32} />
+                    name={({size}) => (
+                      <Feather name="mail" color={usernameColor} size={size} />
                     )}
                   />
                 }
                 right={
                   <TextInput.Icon
-                    name={() => (
+                    name={({size}) => (
                       <Animatable.View animation="bounceIn" ref={_userCheck}>
                         <Feather
                           name={
@@ -134,7 +134,7 @@ const SignInScreen = ({navigation}) => {
                               : null
                           }
                           color={usernameColor}
-                          size={32}
+                          size={size}
                         />
                       </Animatable.View>
                     )}
@@ -183,22 +183,22 @@ const SignInScreen = ({navigation}) => {
                 value={password}
                 left={
                   <TextInput.Icon
-                    name={() => (
-                      <Feather name="lock" color={passwordColor} size={32} />
+                    name={({size}) => (
+                      <Feather name="lock" color={passwordColor} size={size} />
                     )}
                     access
                   />
                 }
                 right={
                   <TextInput.Icon
-                    name={() => (
+                    name={({size}) => (
                       <Animatable.View
                         ref={_eyeIcon}
                         onTouchEnd={() => _eyeIcon.current.bounceIn()}>
                         <Feather
                           name={secureTextEntry ? 'eye-off' : 'eye'}
                           color={secureTextEntry ? 'darkgrey' : 'dimgrey'}
-                          size={32}
+                          size={size}
                         />
                       </Animatable.View>
                     )}
@@ -353,5 +353,16 @@ const styles = StyleSheet.create({
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  card: {
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+
+    elevation: 5,
   },
 });

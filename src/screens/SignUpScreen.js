@@ -1,5 +1,12 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {Dimensions, Image, StyleSheet, View} from 'react-native';
+import {
+  Alert,
+  Dimensions,
+  Image,
+  Keyboard,
+  StyleSheet,
+  View,
+} from 'react-native';
 import {
   Card,
   Text,
@@ -13,6 +20,7 @@ import {FocusAwareStatusBar, MyView} from '../components';
 import {LogoFull, LogoCredit} from '../assets';
 import * as Animatable from 'react-native-animatable';
 import Feather from 'react-native-vector-icons/Feather';
+import auth from '@react-native-firebase/auth';
 
 const {width, height} = Dimensions.get('window');
 const responsiveSize = width > height ? width * 0.4 : height * 0.4;
@@ -106,7 +114,59 @@ const SignUpScreen = ({navigation}) => {
     }
   };
 
-  const handleSignUp = () => console.log('Signing Up');
+  const handleSignUp = () => {
+    Keyboard.dismiss();
+    _email.current.blur();
+    _name.current.blur();
+    _password.current.blur();
+    _confirm.current.blur();
+    setInitialEmailState(false);
+    setInitialNameState(false);
+    setInitialPasswordState(false);
+    setInitialConfirmState(false);
+
+    if (isValidEmail && isValidName && isValidPassword && isValidConfirm) {
+      auth()
+        .createUserWithEmailAndPassword(email, password)
+        .then(async res => {
+          await auth().currentUser.updateProfile({displayName: name});
+          Alert.alert(
+            'Success',
+            'Your account has been succesfully created.',
+            [{text: 'OK', onPress: () => navigation.replace('Home')}],
+            {cancelable: false},
+          );
+          console.log(JSON.stringify(res, null, 5));
+        })
+        .catch(error => {
+          if (error.code === 'auth/email-already-in-use') {
+            console.log('That email address is already in use!');
+            setIsValidEmail(false);
+            setEmailColor('red');
+          }
+
+          if (error.code === 'auth/invalid-email') {
+            console.log('That email address is invalid!');
+            setIsValidEmail(false);
+            setEmailColor('red');
+          }
+        });
+    } else {
+      if (isEmpty(email)) {
+        setIsValidEmail(false);
+        setEmailColor('red');
+      }
+      if (isEmpty(name)) {
+        setIsValidName(false);
+        setNameColor('red');
+      }
+      setIsValidPassword(false);
+      setPasswordColor('red');
+      setIsValidConfirm(false);
+      setConfirmColor('red');
+      _email.current.focus();
+    }
+  };
 
   const handleSignIn = () =>
     _form.current.fadeOutUpBig().then(() => navigation.replace('SignIn'));
@@ -154,7 +214,7 @@ const SignUpScreen = ({navigation}) => {
                 left={
                   <TextInput.Icon
                     name={({size}) => (
-                      <Feather name="user" color={emailColor} size={size} />
+                      <Feather name="mail" color={emailColor} size={size} />
                     )}
                   />
                 }

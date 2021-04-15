@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1058723292471",
+    "project_id": "astro-hub-hkm",
+    "storage_bucket": "astro-hub-hkm.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1058723292471:android:3264ffc427c5007639e6b2",
+        "android_client_info": {
+          "package_name": "com.hkm.astrohub"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1058723292471-5vhej76ce9b0hrsffif658mltnjm8v3u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_WLckqmHN4qYv50LW5Qtbh2WYQFBSpCY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1058723292471-5vhej76ce9b0hrsffif658mltnjm8v3u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

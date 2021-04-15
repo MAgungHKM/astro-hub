@@ -1,6 +1,0 @@
-primary 0042BC
-primary light 5a6cef
-primary dark 001d8b
-secondary 2962ff
-secondary light 768fff
-secondary dark 0039cb

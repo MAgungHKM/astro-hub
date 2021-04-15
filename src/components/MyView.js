@@ -2,7 +2,6 @@ import React from 'react';
 import {
   StyleSheet,
   ImageBackground,
-  Dimensions,
   View,
   TouchableWithoutFeedback,
   Keyboard,
@@ -10,20 +9,18 @@ import {
 import {Background} from '../assets';
 import {PRIMARY_COLOR_DARK} from '../assets/static/colors';
 
-const {width, height} = Dimensions.get('window');
-
 const MyView = ({children, style = {}}) => {
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View style={styles.wrapper}>
+    <View style={styles.wrapper}>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <ImageBackground
           source={Background}
           style={styles.background}
           resizeMode="cover">
           <View style={style}>{children}</View>
         </ImageBackground>
-      </View>
-    </TouchableWithoutFeedback>
+      </TouchableWithoutFeedback>
+    </View>
   );
 };
 
@@ -31,8 +28,7 @@ export default MyView;
 
 const styles = StyleSheet.create({
   background: {
-    width,
-    height,
+    flex: 1,
   },
   wrapper: {
     flex: 1,
