@@ -1,8 +1,17 @@
 package com.hkm.astrohub;
 
+import androidx.appcompat.app.AppCompatDelegate;
+import android.os.Bundle;
+
 import com.facebook.react.ReactActivity;
 
 public class MainActivity extends ReactActivity {
+
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+    super.onCreate(savedInstanceState);
+  }
 
   /**
    * Returns the name of the main component registered from JavaScript. This is used to schedule

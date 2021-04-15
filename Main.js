@@ -12,7 +12,7 @@ import {PRIMARY_COLOR, PRIMARY_COLOR_DARK} from './src/assets/static/colors';
 const fontConfig = {
   web: {
     regular: {
-      fontFamily: 'Atkinson-Hyperlegible-Bold',
+      fontFamily: 'Atkinson-Hyperlegible-Regular',
       fontWeight: 'normal',
     },
     medium: {
@@ -30,7 +30,7 @@ const fontConfig = {
   },
   ios: {
     regular: {
-      fontFamily: 'Atkinson-Hyperlegible-Bold',
+      fontFamily: 'Atkinson-Hyperlegible-Regular',
       fontWeight: 'normal',
     },
     medium: {
@@ -48,7 +48,7 @@ const fontConfig = {
   },
   android: {
     regular: {
-      fontFamily: 'Atkinson-Hyperlegible-Bold',
+      fontFamily: 'Atkinson-Hyperlegible-Regular',
       fontWeight: 'normal',
     },
     medium: {
