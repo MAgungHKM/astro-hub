@@ -197,7 +197,7 @@ const SignUpScreen = ({navigation}) => {
 
             <Animatable.View
               animation="fadeIn"
-              delay={1200}
+              delay={1500}
               style={{marginTop: 12}}>
               <TextInput
                 label="Display Name"
