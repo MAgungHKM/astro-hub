@@ -69,7 +69,7 @@ const SignUpScreen = ({navigation}) => {
     setName(name);
     setInitialNameState(false);
 
-    if (!isEmpty(name) && name.length <= 121) {
+    if (!isEmpty(name) && name.length <= 12) {
       setIsValidName(true);
       setNameColor('forestgreen');
     } else {
@@ -197,7 +197,7 @@ const SignUpScreen = ({navigation}) => {
 
             <Animatable.View
               animation="fadeIn"
-              delay={12100}
+              delay={1200}
               style={{marginTop: 12}}>
               <TextInput
                 label="Display Name"
@@ -255,8 +255,8 @@ const SignUpScreen = ({navigation}) => {
                 <Caption style={styles.errorCaption}>
                   {isEmpty(name)
                     ? 'Display Name field is required.'
-                    : name.length > 121
-                    ? 'Maximum display name length is 121'
+                    : name.length > 12
+                    ? 'Maximum display name length is 12'
                     : 'Display Name is already used.'}
                 </Caption>
               </Animatable.View>
