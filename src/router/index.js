@@ -1,11 +1,14 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {StyleSheet} from 'react-native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {SplashScreen, SignInScreen, SignUpScreen, HomeScreen} from '../screens';
+import {AppContext} from '../contexts/AppContext';
 
 const Stack = createStackNavigator();
 
 const Router = () => {
+  const {currentUser} = useContext(AppContext);
+
   return (
     <Stack.Navigator
       headerMode="none"

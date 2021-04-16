@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "1058723292471",
+    "firebase_url": "https://astro-hub-hkm-default-rtdb.firebaseio.com",
     "project_id": "astro-hub-hkm",
     "storage_bucket": "astro-hub-hkm.appspot.com"
   },
@@ -13,6 +14,14 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "1058723292471-gfv406mcqhdlbhrrofek45rt3ggkql8v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hkm.astrohub",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
         {
           "client_id": "1058723292471-5vhej76ce9b0hrsffif658mltnjm8v3u.apps.googleusercontent.com",
           "client_type": 3

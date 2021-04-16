@@ -81,6 +81,7 @@ const CombinedDefaultTheme = merge(theme, NavigationDefaulTheme);
 const firebaseConfig = {
   apiKey: 'AIzaSyByVmJZHLKdW9vGO6n5OfrO7BUw1ZGuwTY',
   authDomain: 'astro-hub-hkm.firebaseapp.com',
+  databaseURL: 'https://astro-hub-hkm-default-rtdb.firebaseio.com',
   projectId: 'astro-hub-hkm',
   storageBucket: 'astro-hub-hkm.appspot.com',
   messagingSenderId: '1058723292471',

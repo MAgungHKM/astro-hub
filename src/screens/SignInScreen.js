@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {Dimensions, Image, StyleSheet, View} from 'react-native';
+import {Dimensions, Image, Keyboard, StyleSheet, View} from 'react-native';
 import {
   Card,
   Text,
@@ -13,45 +13,49 @@ import {FocusAwareStatusBar, MyView} from '../components';
 import {LogoFull, LogoCredit} from '../assets';
 import * as Animatable from 'react-native-animatable';
 import Feather from 'react-native-vector-icons/Feather';
+import auth from '@react-native-firebase/auth';
+import {emailValidation} from '../utils/helpers';
 
 const {width, height} = Dimensions.get('window');
 const responsiveSize = width > height ? width * 0.4 : height * 0.4;
 
 const SignInScreen = ({navigation}) => {
-  const [username, setUsername] = useState('');
-  const [isValidUsername, setIsValidUsername] = useState(false);
-  const [usernameColor, setUsernameColor] = useState(PRIMARY_COLOR);
-  const [initialUsernameState, setInitialUsernameState] = useState(true);
+  const [email, setEmail] = useState('');
+  const [isValidEmail, setIsValidEmail] = useState(false);
+  const [emailColor, setEmailColor] = useState(PRIMARY_COLOR);
+  const [initialEmailState, setInitialEmailState] = useState(true);
   const [password, setPassword] = useState('');
   const [isValidPassword, setIsValidPassword] = useState(false);
   const [passwordColor, setPasswordColor] = useState(PRIMARY_COLOR);
   const [initialPasswordState, setInitialPasswordState] = useState(true);
   const [secureTextEntry, setSecureTextEntry] = useState(true);
+  const [blocked, setBlocked] = useState(false);
 
   const _form = useRef(null);
   const _credit = useRef(null);
   const _footer = useRef(null);
   const _creditContainer = useRef(null);
-  const _username = useRef(null);
-  const _userCheck = useRef(null);
+  const _email = useRef(null);
+  const _emailCheck = useRef(null);
   const _password = useRef(null);
   const _eyeIcon = useRef(null);
 
   const updateSecureEntryText = () => setSecureTextEntry(!secureTextEntry);
 
-  const handleUsernameChange = username => {
-    setUsername(username);
-    setInitialUsernameState(false);
+  const handleEmailChange = email => {
+    setEmail(email);
+    setInitialEmailState(false);
+    setBlocked(false);
 
-    if (!isEmpty(username)) {
-      setIsValidUsername(true);
-      setUsernameColor('forestgreen');
+    if (isEmpty(email) || emailValidation.test(email) === false) {
+      setIsValidEmail(false);
+      setEmailColor('red');
     } else {
-      setIsValidUsername(false);
-      setUsernameColor('red');
+      setIsValidEmail(true);
+      setEmailColor('forestgreen');
     }
 
-    _userCheck.current.bounceIn();
+    _emailCheck.current.bounceIn();
   };
 
   const handlePasswordChange = password => {
@@ -67,7 +71,80 @@ const SignInScreen = ({navigation}) => {
     }
   };
 
-  const handleSignIn = () => console.log('Signing In');
+  const handleInvalidInput = () => {
+    setIsValidEmail(false);
+    setEmailColor('red');
+    setPassword('');
+    setPasswordColor('red');
+    setIsValidPassword(false);
+    _email.current.focus();
+  };
+
+  const handleSignIn = () => {
+    Keyboard.dismiss();
+    _email.current.blur();
+    _password.current.blur();
+    setInitialEmailState(false);
+    setInitialPasswordState(false);
+
+    if (isValidEmail && isValidPassword) {
+      auth()
+        .signInWithEmailAndPassword(email, password)
+        .then(async res => {
+          await auth().then(() => {
+            Alert.alert(
+              'Success',
+              'You have been succesfully signed in.',
+              [
+                {
+                  text: 'OK',
+                  onPress: () => navigation.replace('Home'),
+                },
+              ],
+              {cancelable: false},
+            );
+            console.log(JSON.stringify(res, null, 5));
+          });
+        })
+        .catch(error => {
+          if (error.code === 'auth/email-already-in-use') {
+            console.log('That email address is already in use!');
+            handleInvalidInput();
+          }
+
+          if (error.code === 'auth/invalid-email') {
+            console.log('That email address is invalid!');
+            handleInvalidInput();
+          }
+
+          if (error.code === 'auth/user-not-found') {
+            console.log('That user not found!');
+            handleInvalidInput();
+          }
+
+          if (error.code === 'auth/wrong-password') {
+            console.log('Wrong password!');
+            handleInvalidInput();
+          }
+
+          if (error.code === 'auth/too-many-requests') {
+            console.log('Your account is temporarily blocked!');
+            setBlocked(true);
+            handleInvalidInput();
+          }
+        });
+    } else {
+      if (isEmpty(email)) {
+        setIsValidEmail(false);
+        setEmailColor('red');
+      }
+      if (isEmpty(password)) {
+        setIsValidPassword(false);
+        setPasswordColor('red');
+      }
+      _email.current.focus();
+    }
+  };
 
   const handleSignUp = () => {
     _footer.current.fadeOutDownBig();
@@ -84,7 +161,7 @@ const SignInScreen = ({navigation}) => {
         delay={200}
         ref={_form}>
         <Card theme={{roundness: 16}} style={styles.card}>
-          <Animatable.View animation="fadeIn" delay={1100}>
+          <Animatable.View animation="bounceIn" delay={1100}>
             <Card.Title
               title="Welcome to Astro Hub!"
               titleStyle={styles.cardTitle}
@@ -92,48 +169,45 @@ const SignInScreen = ({navigation}) => {
           </Animatable.View>
 
           <Card.Content>
-            <Animatable.View animation="fadeIn" delay={1300}>
+            <Animatable.View animation="bounceIn" delay={1200}>
               <TextInput
-                label="Email"
-                placeholder="Your Email"
+                label="Email Address"
+                placeholder="Your Email Address"
                 mode="outlined"
                 autoCapitalize="none"
                 returnKeyType="next"
                 onSubmitEditing={() => _password.current.focus()}
                 blurOnSubmit={false}
                 theme={{
-                  colors: {primary: usernameColor, placeholder: usernameColor},
+                  colors: {primary: emailColor, placeholder: emailColor},
                   roundness: 12,
                 }}
-                selectionColor={usernameColor}
-                underlineColor={usernameColor}
-                underlineColorAndroid={usernameColor}
-                onChangeText={value => handleUsernameChange(value)}
-                onEndEditing={event =>
-                  handleUsernameChange(event.nativeEvent.text)
-                }
-                ref={_username}
-                value={username}
+                selectionColor={emailColor}
+                underlineColor={emailColor}
+                underlineColorAndroid={emailColor}
+                onChangeText={value => handleEmailChange(value)}
+                ref={_email}
+                value={email}
                 left={
                   <TextInput.Icon
                     name={({size}) => (
-                      <Feather name="mail" color={usernameColor} size={size} />
+                      <Feather name="mail" color={emailColor} size={size} />
                     )}
                   />
                 }
                 right={
                   <TextInput.Icon
                     name={({size}) => (
-                      <Animatable.View animation="bounceIn" ref={_userCheck}>
+                      <Animatable.View animation="bounceIn" ref={_emailCheck}>
                         <Feather
                           name={
-                            !initialUsernameState
-                              ? isValidUsername
+                            !initialEmailState
+                              ? isValidEmail
                                 ? 'check-circle'
                                 : 'x-circle'
                               : null
                           }
-                          color={usernameColor}
+                          color={emailColor}
                           size={size}
                         />
                       </Animatable.View>
@@ -143,22 +217,26 @@ const SignInScreen = ({navigation}) => {
               />
             </Animatable.View>
 
-            {initialUsernameState ? null : isValidUsername ? null : (
+            {initialEmailState ? null : isValidEmail ? null : (
               <Animatable.View
                 animation="bounceIn"
                 style={styles.errorContainer}>
                 <Feather name="info" size={20} color="red" />
                 <Caption style={styles.errorCaption}>
-                  {isEmpty(username)
-                    ? 'Email field is required.'
-                    : 'Invalid Email or Password.'}
+                  {isEmpty(email)
+                    ? 'Email Address field is required.'
+                    : blocked
+                    ? 'Your account has been temporarily blocked.'
+                    : emailValidation.test(email)
+                    ? 'Invalid Email Address or Password.'
+                    : 'Invalid email address format.'}
                 </Caption>
               </Animatable.View>
             )}
 
             <Animatable.View
-              animation="fadeIn"
-              delay={1500}
+              animation="bounceIn"
+              delay={1300}
               style={{marginTop: 12}}>
               <TextInput
                 label="Password"
@@ -171,14 +249,11 @@ const SignInScreen = ({navigation}) => {
                   roundness: 12,
                 }}
                 returnKeyType="go"
-                onSubmitEditing={() => handleSignIn(username, password)}
+                onSubmitEditing={() => handleSignIn(email, password)}
                 selectionColor={passwordColor}
                 underlineColor={passwordColor}
                 underlineColorAndroid={passwordColor}
                 onChangeText={value => handlePasswordChange(value)}
-                onEndEditing={event =>
-                  handlePasswordChange(event.nativeEvent.text)
-                }
                 ref={_password}
                 value={password}
                 left={
@@ -186,7 +261,6 @@ const SignInScreen = ({navigation}) => {
                     name={({size}) => (
                       <Feather name="lock" color={passwordColor} size={size} />
                     )}
-                    access
                   />
                 }
                 right={
@@ -223,8 +297,8 @@ const SignInScreen = ({navigation}) => {
 
             <Animatable.View
               style={styles.buttonContainer}
-              animation="fadeIn"
-              delay={1700}>
+              animation="bounceIn"
+              delay={1400}>
               <TouchableRipple
                 style={styles.button}
                 borderless={true}
@@ -236,13 +310,9 @@ const SignInScreen = ({navigation}) => {
             </Animatable.View>
 
             <Animatable.View
-              animation="fadeIn"
-              delay={1900}
-              style={{
-                marginVertical: 16,
-                borderBottomWidth: 1,
-                borderBottomColor: 'darkgrey',
-              }}
+              animation="bounceIn"
+              delay={1500}
+              style={styles.line}
             />
 
             <Animatable.View
@@ -253,8 +323,8 @@ const SignInScreen = ({navigation}) => {
                   backgroundColor: 'white',
                 },
               ]}
-              animation="fadeIn"
-              delay={2100}>
+              animation="bounceIn"
+              delay={1500}>
               <TouchableRipple
                 style={styles.button}
                 borderless={true}
@@ -364,5 +434,10 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
 
     elevation: 5,
+  },
+  line: {
+    marginVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: 'darkgrey',
   },
 });

@@ -21,6 +21,8 @@ import {LogoFull, LogoCredit} from '../assets';
 import * as Animatable from 'react-native-animatable';
 import Feather from 'react-native-vector-icons/Feather';
 import auth from '@react-native-firebase/auth';
+import database from '@react-native-firebase/database';
+import {emailValidation, randomString} from '../utils/helpers';
 
 const {width, height} = Dimensions.get('window');
 const responsiveSize = width > height ? width * 0.4 : height * 0.4;
@@ -126,29 +128,72 @@ const SignUpScreen = ({navigation}) => {
     setInitialConfirmState(false);
 
     if (isValidEmail && isValidName && isValidPassword && isValidConfirm) {
-      auth()
-        .createUserWithEmailAndPassword(email, password)
-        .then(async res => {
-          await auth().currentUser.updateProfile({displayName: name});
-          Alert.alert(
-            'Success',
-            'Your account has been succesfully created.',
-            [{text: 'OK', onPress: () => navigation.replace('Home')}],
-            {cancelable: false},
-          );
-          console.log(JSON.stringify(res, null, 5));
-        })
-        .catch(error => {
-          if (error.code === 'auth/email-already-in-use') {
-            console.log('That email address is already in use!');
-            setIsValidEmail(false);
-            setEmailColor('red');
+      database()
+        .ref('/users')
+        .once('value', snapshots => {
+          let check = false;
+          const results = JSON.parse(JSON.stringify(snapshots));
+          for (const result in results) {
+            if (Object.hasOwnProperty.call(results, result)) {
+              const res = results[result];
+              if (res.displayName === name) {
+                check = true;
+                break;
+              }
+            }
           }
 
-          if (error.code === 'auth/invalid-email') {
-            console.log('That email address is invalid!');
-            setIsValidEmail(false);
-            setEmailColor('red');
+          if (check) {
+            console.log('That Display Name address is already in use!');
+            setIsValidName(false);
+            setNameColor('red');
+            _name.current.focus();
+          } else {
+            auth()
+              .createUserWithEmailAndPassword(email, password)
+              .then(async res => {
+                await auth()
+                  .currentUser.updateProfile({displayName: name})
+                  .then(async () => {
+                    const newRef = database().ref(`/users/`).push();
+                    await newRef
+                      .set({
+                        uid: `${randomString()}${
+                          auth().currentUser.uid
+                        }${randomString()}`,
+                        displayName: auth().currentUser.displayName,
+                      })
+                      .then(() => {
+                        Alert.alert(
+                          'Success',
+                          'Your account has been succesfully created.',
+                          [
+                            {
+                              text: 'OK',
+                              onPress: () => navigation.replace('Home'),
+                            },
+                          ],
+                          {cancelable: false},
+                        );
+                        console.log(JSON.stringify(res, null, 5));
+                      });
+                  });
+              })
+              .catch(error => {
+                if (error.code === 'auth/email-already-in-use') {
+                  console.log('That email address is already in use!');
+                  setIsValidEmail(false);
+                  setEmailColor('red');
+                  _email.current.focus();
+                }
+
+                if (error.code === 'auth/invalid-email') {
+                  console.log('That email address is invalid!');
+                  setIsValidEmail(false);
+                  setEmailColor('red');
+                  _email.current.focus();
+                }
+              });
           }
         });
     } else {
@@ -160,10 +205,14 @@ const SignUpScreen = ({navigation}) => {
         setIsValidName(false);
         setNameColor('red');
       }
-      setIsValidPassword(false);
-      setPasswordColor('red');
-      setIsValidConfirm(false);
-      setConfirmColor('red');
+      if (isEmpty(password)) {
+        setIsValidPassword(false);
+        setPasswordColor('red');
+      }
+      if (isEmpty(confirm)) {
+        setIsValidConfirm(false);
+        setConfirmColor('red');
+      }
       _email.current.focus();
     }
   };
@@ -177,11 +226,11 @@ const SignUpScreen = ({navigation}) => {
 
       <Animatable.View
         style={styles.content}
-        animation="fadeInUpBig"
+        animation="fadeInDownBig"
         delay={200}
         ref={_form}>
         <Card theme={{roundness: 16}}>
-          <Animatable.View animation="fadeIn" delay={1100}>
+          <Animatable.View animation="bounceIn" delay={1100}>
             <Card.Title
               title="Please fill the form!"
               titleStyle={styles.title}
@@ -189,10 +238,10 @@ const SignUpScreen = ({navigation}) => {
           </Animatable.View>
 
           <Card.Content>
-            <Animatable.View animation="fadeIn" delay={1300}>
+            <Animatable.View animation="bounceIn" delay={1200}>
               <TextInput
-                label="Email"
-                placeholder="Your Email"
+                label="Email Address"
+                placeholder="Your Email Address"
                 mode="outlined"
                 autoCapitalize="none"
                 returnKeyType="next"
@@ -206,9 +255,6 @@ const SignUpScreen = ({navigation}) => {
                 underlineColor={emailColor}
                 underlineColorAndroid={emailColor}
                 onChangeText={value => handleEmailChange(value)}
-                onEndEditing={event =>
-                  handleEmailChange(event.nativeEvent.text)
-                }
                 ref={_email}
                 value={email}
                 left={
@@ -247,17 +293,17 @@ const SignUpScreen = ({navigation}) => {
                 <Feather name="info" size={20} color="red" />
                 <Caption style={styles.errorCaption}>
                   {isEmpty(email)
-                    ? 'Email field is required.'
+                    ? 'Email Address field is required.'
                     : emailValidation.test(email) === false
-                    ? 'Invalid email format'
-                    : 'Email is already used.'}
+                    ? 'Invalid email address format'
+                    : 'Email Address is already used.'}
                 </Caption>
               </Animatable.View>
             )}
 
             <Animatable.View
-              animation="fadeIn"
-              delay={1500}
+              animation="bounceIn"
+              delay={1300}
               style={{marginTop: 12}}>
               <TextInput
                 label="Display Name"
@@ -275,7 +321,6 @@ const SignUpScreen = ({navigation}) => {
                 underlineColor={nameColor}
                 underlineColorAndroid={nameColor}
                 onChangeText={value => handleNameChange(value)}
-                onEndEditing={event => handleNameChange(event.nativeEvent.text)}
                 ref={_name}
                 value={name}
                 left={
@@ -323,8 +368,8 @@ const SignUpScreen = ({navigation}) => {
             )}
 
             <Animatable.View
-              animation="fadeIn"
-              delay={1700}
+              animation="bounceIn"
+              delay={1400}
               style={{marginTop: 12}}>
               <TextInput
                 label="Password"
@@ -343,9 +388,6 @@ const SignUpScreen = ({navigation}) => {
                 underlineColor={passwordColor}
                 underlineColorAndroid={passwordColor}
                 onChangeText={value => handlePasswordChange(value)}
-                onEndEditing={event =>
-                  handlePasswordChange(event.nativeEvent.text)
-                }
                 ref={_password}
                 value={password}
                 left={
@@ -391,8 +433,8 @@ const SignUpScreen = ({navigation}) => {
             )}
 
             <Animatable.View
-              animation="fadeIn"
-              delay={1900}
+              animation="bounceIn"
+              delay={1500}
               style={{marginTop: 12}}>
               <TextInput
                 label="Confirm Password"
@@ -410,9 +452,6 @@ const SignUpScreen = ({navigation}) => {
                 underlineColor={confirmColor}
                 underlineColorAndroid={confirmColor}
                 onChangeText={value => handleConfirmChange(value)}
-                onEndEditing={event =>
-                  handleConfirmChange(event.nativeEvent.text)
-                }
                 ref={_confirm}
                 value={confirm}
                 left={
@@ -457,8 +496,8 @@ const SignUpScreen = ({navigation}) => {
 
             <Animatable.View
               style={styles.buttonContainer}
-              animation="fadeIn"
-              delay={2100}>
+              animation="bounceIn"
+              delay={1600}>
               <TouchableRipple
                 style={styles.button}
                 borderless={true}
@@ -468,13 +507,9 @@ const SignUpScreen = ({navigation}) => {
             </Animatable.View>
 
             <Animatable.View
-              animation="fadeIn"
-              delay={2300}
-              style={{
-                marginVertical: 16,
-                borderBottomWidth: 1,
-                borderBottomColor: 'darkgrey',
-              }}
+              animation="bounceIn"
+              delay={1700}
+              style={styles.line}
             />
 
             <Animatable.View
@@ -485,8 +520,8 @@ const SignUpScreen = ({navigation}) => {
                   backgroundColor: 'white',
                 },
               ]}
-              animation="fadeIn"
-              delay={2500}>
+              animation="bounceIn"
+              delay={1700}>
               <TouchableRipple
                 style={styles.button}
                 borderless={true}
@@ -504,8 +539,6 @@ const SignUpScreen = ({navigation}) => {
 };
 
 const isEmpty = check => check.trim().length === 0;
-
-const emailValidation = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
 export default SignUpScreen;
 
@@ -556,5 +589,10 @@ const styles = StyleSheet.create({
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  line: {
+    marginVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: 'darkgrey',
   },
 });

@@ -1,15 +1,18 @@
-import React, {useEffect, useRef} from 'react';
+import React, {useContext, useEffect, useRef} from 'react';
 import {Dimensions, Image, StyleSheet, View} from 'react-native';
 import {Title} from 'react-native-paper';
 import {PRIMARY_COLOR_DARK} from '../assets/static/colors';
 import {FocusAwareStatusBar, MyView} from '../components';
 import {LogoFull, LogoSNAPI} from '../assets';
 import * as Animatable from 'react-native-animatable';
+import {AppContext} from '../contexts/AppContext';
 
 const {width, height} = Dimensions.get('window');
 const responsiveSize = width > height ? width * 0.4 : height * 0.4;
 
 const SplashScreen = ({navigation}) => {
+  const {currentUser} = useContext(AppContext);
+
   const _logo = useRef(null);
   const _snapi = useRef(null);
   const _footer = useRef(null);
@@ -21,7 +24,9 @@ const SplashScreen = ({navigation}) => {
       _snapi.current.pulse();
       _logo.current.tada().then(() => {
         _footer.current.fadeOutDownBig();
-        _logo.current.bounceOut().then(() => navigation.replace('SignIn'));
+        _logo.current
+          .bounceOut()
+          .then(() => navigation.replace(currentUser ? 'Home' : 'SignIn'));
       });
     }, 2000);
   }, []);
@@ -32,8 +37,9 @@ const SplashScreen = ({navigation}) => {
 
       <Animatable.View
         style={styles.header}
-        animation="zoomIn"
-        delay={200}
+        animation="bounceIn"
+        duration={1500}
+        delay={300}
         ref={_logo}>
         <Image style={styles.logo} source={LogoFull} resizeMode="contain" />
       </Animatable.View>
@@ -41,7 +47,7 @@ const SplashScreen = ({navigation}) => {
       <Animatable.View
         style={styles.footer}
         animation="fadeInUp"
-        delay={300}
+        delay={400}
         onAnimationEnd={() => _snapi.current.fadeIn()}
         ref={_footer}>
         <Title style={styles.title}>{'P O W E R E D   B Y'}</Title>

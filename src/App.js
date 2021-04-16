@@ -1,11 +1,14 @@
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import Router from './router';
+import {AppProvider} from './contexts/AppContext';
 
 const App = ({CombinedDefaultTheme}) => {
   return (
     <NavigationContainer theme={CombinedDefaultTheme}>
-      <Router />
+      <AppProvider>
+        <Router />
+      </AppProvider>
     </NavigationContainer>
   );
 };
