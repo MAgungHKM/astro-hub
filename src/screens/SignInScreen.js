@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {Dimensions, Image, Keyboard, StyleSheet, View} from 'react-native';
 import {
   Card,
@@ -9,12 +9,13 @@ import {
   TouchableRipple,
 } from 'react-native-paper';
 import {PRIMARY_COLOR, PRIMARY_COLOR_DARK} from '../assets/static/colors';
-import {FocusAwareStatusBar, MyView} from '../components';
+import {FocusAwareStatusBar, LoadingIndicator, MyView} from '../components';
 import {LogoFull, LogoCredit} from '../assets';
 import * as Animatable from 'react-native-animatable';
 import Feather from 'react-native-vector-icons/Feather';
 import auth from '@react-native-firebase/auth';
 import {emailValidation} from '../utils/helpers';
+import {AppContext} from '../contexts/AppContext';
 
 const {width, height} = Dimensions.get('window');
 const responsiveSize = width > height ? width * 0.4 : height * 0.4;
@@ -30,6 +31,10 @@ const SignInScreen = ({navigation}) => {
   const [initialPasswordState, setInitialPasswordState] = useState(true);
   const [secureTextEntry, setSecureTextEntry] = useState(true);
   const [blocked, setBlocked] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const startLoading = () => setIsLoading(true);
+  const stopLoading = () => setIsLoading(false);
 
   const _form = useRef(null);
   const _credit = useRef(null);
@@ -86,27 +91,17 @@ const SignInScreen = ({navigation}) => {
     _password.current.blur();
     setInitialEmailState(false);
     setInitialPasswordState(false);
+    startLoading();
 
     if (isValidEmail && isValidPassword) {
       auth()
         .signInWithEmailAndPassword(email, password)
-        .then(async res => {
-          await auth().then(() => {
-            Alert.alert(
-              'Success',
-              'You have been succesfully signed in.',
-              [
-                {
-                  text: 'OK',
-                  onPress: () => navigation.replace('Home'),
-                },
-              ],
-              {cancelable: false},
-            );
-            console.log(JSON.stringify(res, null, 5));
-          });
+        .then(res => {
+          stopLoading();
+          navigation.replace('Home');
         })
         .catch(error => {
+          stopLoading();
           if (error.code === 'auth/email-already-in-use') {
             console.log('That email address is already in use!');
             handleInvalidInput();
@@ -134,6 +129,7 @@ const SignInScreen = ({navigation}) => {
           }
         });
     } else {
+      stopLoading();
       if (isEmpty(email)) {
         setIsValidEmail(false);
         setEmailColor('red');
@@ -154,6 +150,7 @@ const SignInScreen = ({navigation}) => {
   return (
     <MyView style={styles.container}>
       <FocusAwareStatusBar animated={true} hidden={false} />
+      <LoadingIndicator isLoading={isLoading} />
 
       <Animatable.View
         style={styles.header}
@@ -186,6 +183,7 @@ const SignInScreen = ({navigation}) => {
                 underlineColor={emailColor}
                 underlineColorAndroid={emailColor}
                 onChangeText={value => handleEmailChange(value)}
+                onEndEditing={e => handleEmailChange(e.nativeEvent.text)}
                 ref={_email}
                 value={email}
                 left={
@@ -371,6 +369,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontFamily: 'Atkinson-Hyperlegible-Regular',
     fontSize: 26,
+    textAlign: 'center',
   },
   cardTitle: {
     color: PRIMARY_COLOR_DARK,
@@ -380,14 +379,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    flex: 0.8,
     justifyContent: 'center',
     padding: 24,
+    marginTop: 36,
+    marginBottom: 80,
   },
   footer: {
-    flex: 0.2,
-    justifyContent: 'center',
-    alignItems: 'center',
+    alignSelf: 'center',
   },
   logo: {
     width: responsiveSize,

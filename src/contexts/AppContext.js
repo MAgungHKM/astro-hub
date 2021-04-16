@@ -18,21 +18,10 @@ export const AppProvider = ({children}) => {
     return subscriber; // unsubscribe on unmount
   }, []);
 
-  const signOut = async () =>
-    await auth()
-      .signOut()
-      .then(res => {
-        console.log(JSON.stringify(res, null, 5));
-        navigation.replace('SignIn');
-      })
-      .catch(error => {
-        console.log(JSON.stringify(error, null, 5));
-      });
-
   if (initializing) return null;
 
   return (
-    <AppContext.Provider value={{currentUser, setCurrentUser, signOut}}>
+    <AppContext.Provider value={{currentUser, setCurrentUser}}>
       {children}
     </AppContext.Provider>
   );

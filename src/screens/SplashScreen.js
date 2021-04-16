@@ -18,8 +18,6 @@ const SplashScreen = ({navigation}) => {
   const _footer = useRef(null);
 
   useEffect(() => {
-    // do auth here
-
     setTimeout(() => {
       _snapi.current.pulse();
       _logo.current.tada().then(() => {
@@ -71,6 +69,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontFamily: 'Atkinson-Hyperlegible-Regular',
     fontSize: 26,
+    textAlign: 'center',
   },
   container: {
     flex: 1,
@@ -81,9 +80,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   footer: {
-    flex: 0.2,
-    justifyContent: 'center',
-    alignItems: 'center',
+    position: 'absolute',
+    alignSelf: 'center',
+    bottom: 8,
   },
   logo: {
     width: responsiveSize,
