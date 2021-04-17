@@ -1,137 +1,170 @@
-import React, {useContext} from 'react';
-import {ImageBackground, StatusBar, StyleSheet, View} from 'react-native';
+import React, {useContext, useEffect, useRef, useState} from 'react';
+import {
+  ImageBackground,
+  RefreshControl,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  View,
+} from 'react-native';
 import {FocusAwareStatusBar, MyView} from '../../components';
-import {Title, Button} from 'react-native-paper';
-import {AppContext} from '../../contexts/AppContext';
+import {Title, Button, Text, TouchableRipple} from 'react-native-paper';
 import auth from '@react-native-firebase/auth';
 import {Header} from '../../assets';
 import {
   MaterialTabBar,
   MaterialTabItem,
   Tabs,
+  useCollapsibleStyle,
+  useFocusedTab,
 } from 'react-native-collapsible-tab-view';
 import * as Animatable from 'react-native-animatable';
-import {PRIMARY_COLOR} from '../../assets/static/colors';
+import {PRIMARY_COLOR, PRIMARY_COLOR_DARK} from '../../assets/static/colors';
+import Animated from 'react-native-reanimated';
+import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
+import TabBar from './TabBar';
+import ArticleScreen from './ArticleScreen';
+import BlogScreen from './BlogScreen';
+import ReportScreen from './ReportScreen';
+import {
+  fetchArticle,
+  fetchBlog,
+  fetchPlanetOrMoon,
+  fetchReport,
+} from '../../api/ApiService';
+import {HomeContext, HomeProvider, AppContext} from '../../contexts';
+
+const Tab = createMaterialTopTabNavigator();
 
 const HEADER_HEIGHT = 235;
 
-const TabHeader = () => {
-  return (
-    <Animatable.View
-      animation="fadeIn"
-      style={[styles.container, {marginTop: -StatusBar.currentHeight}]}>
-      <ImageBackground
-        source={Header}
-        style={{
-          flex: 1,
-          height: HEADER_HEIGHT,
-          marginBottom: StatusBar.currentHeight,
-        }}
-        resizeMode="cover">
-        <Title style={styles.greeting}>{greeting()}</Title>
-      </ImageBackground>
-    </Animatable.View>
-  );
-};
-
-const TabBar = props => (
-  <MaterialTabBar
-    {...props}
-    activeColor="black"
-    inactiveColor="black"
-    inactiveOpacity={1}
-    TabItemComponent={props => (
-      <MaterialTabItem
-        {...props}
-        activeColor="black"
-        inactiveColor="black"
-        inactiveOpacity={1}
-        style={{
-          borderRadius: 8,
-          backgroundColor: PRIMARY_COLOR,
-          margin: 12,
-        }}
-        labelStyle={{
-          color: 'white',
-          fontFamily: 'Atkinson-Hyperlegible-Bold',
-          fontSize: 20,
-        }}
-      />
-    )}
-  />
+const HomeScreen = ({navigation}) => (
+  <HomeProvider>
+    <Home />
+  </HomeProvider>
 );
 
-const HomeScreen = ({navigation}) => {
+const Home = ({navigation}) => {
   const {currentUser} = useContext(AppContext);
-  const renderItem: ListRenderItem<number> = React.useCallback(({index}) => {
-    return (
-      <View style={[styles.box, index % 2 === 0 ? styles.boxB : styles.boxA]} />
-    );
+  const {
+    setArticles,
+    setBlogs,
+    setReports,
+    pushArticles,
+    pushBlogs,
+    pushReports,
+  } = useContext(HomeContext);
+
+  const [statusBar, setStatusBar] = useState(false);
+  const [scroll, setScroll] = useState(new Animated.Value(0));
+  const [isLoading, setIsLoading] = useState(false);
+  const [planetOrMoon, setPlanetOrMoon] = useState({});
+
+  const startLoading = () => setIsLoading(true);
+  const stopLoading = () => setIsLoading(false);
+
+  const onScroll = ({nativeEvent}) => {
+    let y = nativeEvent.contentOffset.y;
+    setScroll(y);
+    let scrollValue = y;
+    if (scrollValue > HEADER_HEIGHT - 64 && !statusBar) {
+      setStatusBar(true);
+    }
+    if (scrollValue <= HEADER_HEIGHT - 64 && statusBar) {
+      setStatusBar(false);
+    }
+  };
+
+  const handleRefresh = () => {
+    startLoading();
+
+    fetchArticle().then(response => {
+      setArticles(response.data);
+      stopLoading();
+    });
+
+    fetchBlog().then(response => {
+      setBlogs(response.data);
+      stopLoading();
+    });
+
+    fetchReport().then(response => {
+      setReports(response.data);
+      stopLoading();
+    });
+  };
+
+  useEffect(() => {
+    handleRefresh();
+
+    fetchPlanetOrMoon().then(response => {
+      setPlanetOrMoon(response.data.bodies[0]);
+    });
   }, []);
 
   return (
     <MyView style={{flex: 1}}>
-      <FocusAwareStatusBar translucent backgroundColor="transparent" />
-      <View style={{flex: 1, paddingTop: StatusBar.currentHeight}}>
-        <Tabs.Container
-          TabBarComponent={TabBar}
-          HeaderComponent={TabHeader}
-          headerHeight={HEADER_HEIGHT}
-          snapThreshold={0.3}>
-          <Tabs.Tab name="Article" label="Article">
-            <Tabs.FlatList
-              data={[0, 1, 2, 3, 4]}
-              renderItem={renderItem}
-              keyExtractor={v => v + ''}
+      <FocusAwareStatusBar
+        translucent
+        animated={true}
+        backgroundColor={statusBar ? PRIMARY_COLOR_DARK : 'transparent'}
+      />
+      <Animatable.View animation="fadeInUpBig" style={styles.container}>
+        <ScrollView
+          style={[styles.container, {marginTop: 48 - StatusBar.currentHeight}]}
+          onScroll={onScroll}
+          refreshControl={
+            <RefreshControl
+              colors={[PRIMARY_COLOR]}
+              accessibilityIgnoresInvertColors={true}
+              progressViewOffset={80}
+              tintColor={'transparent'}
+              titleColor={'transparent'}
+              refreshing={isLoading}
+              onRefresh={handleRefresh}
             />
-          </Tabs.Tab>
-          <Tabs.Tab name="Blog" label="Blog">
-            <Tabs.ScrollView>
-              <View style={[styles.box, styles.boxA]} />
-              <View style={[styles.box, styles.boxB]} />
-            </Tabs.ScrollView>
-          </Tabs.Tab>
-          <Tabs.Tab name="Report" label="Report">
-            <Tabs.ScrollView>
-              <View style={[styles.box, styles.boxA]} />
-              <View style={[styles.box, styles.boxB]} />
-            </Tabs.ScrollView>
-          </Tabs.Tab>
-        </Tabs.Container>
-      </View>
+          }>
+          <ImageBackground
+            source={Header}
+            style={{
+              flex: 1,
+              height: HEADER_HEIGHT,
+              backgroundColor: 'white',
+            }}
+            resizeMode="cover">
+            <Title
+              numberOfLines={2}
+              style={[styles.title, {marginTop: StatusBar.currentHeight + 28}]}>
+              {greeting()},{' '}
+              {currentUser.displayName ? currentUser.displayName : 'loading...'}
+              !
+            </Title>
+            <Text style={[styles.title, {marginTop: 16, fontSize: 20}]}>
+              Here's today's {!planetOrMoon.isPlanet ? 'Moon' : 'Planet'}
+            </Text>
+            <Title style={[styles.title, {marginTop: 0, fontSize: 22}]}>
+              {!planetOrMoon.name
+                ? 'Fetching Data'
+                : planetOrMoon.englishName === ''
+                ? planetOrMoon.name
+                : planetOrMoon.englishName}
+            </Title>
+          </ImageBackground>
+          <Tab.Navigator
+            lazy
+            lazyPlaceholder={() => (
+              <View style={{flex: 1, backgroundColor: 'white'}} />
+            )}
+            style={{flex: 1}}
+            tabBar={TabBar}>
+            <Tab.Screen name="Article" component={ArticleScreen} />
+            <Tab.Screen name="Blog" component={BlogScreen} />
+            <Tab.Screen name="Report" component={ReportScreen} />
+          </Tab.Navigator>
+        </ScrollView>
+      </Animatable.View>
     </MyView>
   );
-  // return (
-  //   <MyView style={styles.container}>
-  //     {/* <Title style={{color: 'white'}}>
-  //       {currentUser.displayName ? `Hello, ${currentUser.displayName}!` : null}
-  //     </Title>
-  //     <Button
-  //       style={{backgroundColor: 'white', marginTop: 12}}
-  //       onPress={() => {
-  //         navigation.replace('SignIn');
-  //         auth()
-  //           .signOut()
-  //           .then(res => {
-  //             console.log(JSON.stringify(res, null, 5));
-  //           })
-  //           .catch(error => {
-  //             console.log(JSON.stringify(error, null, 5));
-  //           });
-  //       }}>
-  //       Sign Out
-  //     </Button> */}
-  //     <FocusAwareStatusBar translucent backgroundColor="transparent" />
-  //     <Animatable.View animation="fadeIn" style={styles.container}>
-  //       <ImageBackground
-  //         source={Header}
-  //         style={{flex: 1, height: 300, backgroundColor: 'white'}}
-  //         resizeMode="cover">
-  //         <Title style={styles.greeting}>{greeting()}</Title>
-  //       </ImageBackground>
-  //     </Animatable.View>
-  //   </MyView>
-  // );
 };
 
 const greeting = () => {
@@ -158,10 +191,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  greeting: {
-    marginTop: StatusBar.currentHeight + 28,
+  title: {
+    marginTop: 8,
     marginHorizontal: 24,
     color: 'white',
-    fontSize: 26,
+    fontSize: 24,
   },
 });

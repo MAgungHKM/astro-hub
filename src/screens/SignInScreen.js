@@ -14,8 +14,7 @@ import {LogoFull, LogoCredit} from '../assets';
 import * as Animatable from 'react-native-animatable';
 import Feather from 'react-native-vector-icons/Feather';
 import auth from '@react-native-firebase/auth';
-import {emailValidation} from '../utils/helpers';
-import {AppContext} from '../contexts/AppContext';
+import {AppContext} from '../contexts';
 
 const {width, height} = Dimensions.get('window');
 const responsiveSize = width > height ? width * 0.4 : height * 0.4;
@@ -52,7 +51,7 @@ const SignInScreen = ({navigation}) => {
     setInitialEmailState(false);
     setBlocked(false);
 
-    if (isEmpty(email) || emailValidation.test(email) === false) {
+    if (isEmpty(email)) {
       setIsValidEmail(false);
       setEmailColor('red');
     } else {
@@ -225,9 +224,7 @@ const SignInScreen = ({navigation}) => {
                     ? 'Email Address field is required.'
                     : blocked
                     ? 'Your account has been temporarily blocked.'
-                    : emailValidation.test(email)
-                    ? 'Invalid Email Address or Password.'
-                    : 'Invalid email address format.'}
+                    : 'Invalid Email Address or Password.'}
                 </Caption>
               </Animatable.View>
             )}

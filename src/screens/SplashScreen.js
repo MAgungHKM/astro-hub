@@ -5,7 +5,7 @@ import {PRIMARY_COLOR_DARK} from '../assets/static/colors';
 import {FocusAwareStatusBar, MyView} from '../components';
 import {LogoFull, LogoSNAPI} from '../assets';
 import * as Animatable from 'react-native-animatable';
-import {AppContext} from '../contexts/AppContext';
+import {AppContext} from '../contexts';
 
 const {width, height} = Dimensions.get('window');
 const responsiveSize = width > height ? width * 0.4 : height * 0.4;

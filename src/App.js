@@ -1,7 +1,7 @@
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import Router from './router';
-import {AppProvider} from './contexts/AppContext';
+import {AppProvider} from './contexts';
 
 const App = ({CombinedDefaultTheme}) => {
   return (
