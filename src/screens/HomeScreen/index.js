@@ -7,7 +7,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import {FocusAwareStatusBar, MyView} from '../../components';
+import {FocusAwareStatusBar, LoadingIndicator, MyView} from '../../components';
 import {Title, Button, Text, TouchableRipple} from 'react-native-paper';
 import auth from '@react-native-firebase/auth';
 import {Header} from '../../assets';
@@ -57,7 +57,7 @@ const Home = ({navigation}) => {
 
   const [statusBar, setStatusBar] = useState(false);
   const [scroll, setScroll] = useState(new Animated.Value(0));
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [planetOrMoon, setPlanetOrMoon] = useState({});
 
   const startLoading = () => setIsLoading(true);
@@ -104,6 +104,7 @@ const Home = ({navigation}) => {
 
   return (
     <MyView style={{flex: 1}}>
+      <LoadingIndicator isLoading={isLoading} />
       <FocusAwareStatusBar
         translucent
         animated={true}
@@ -117,7 +118,7 @@ const Home = ({navigation}) => {
             <RefreshControl
               colors={[PRIMARY_COLOR]}
               accessibilityIgnoresInvertColors={true}
-              progressViewOffset={80}
+              progressViewOffset={128}
               tintColor={'transparent'}
               titleColor={'transparent'}
               refreshing={isLoading}
@@ -156,7 +157,8 @@ const Home = ({navigation}) => {
               <View style={{flex: 1, backgroundColor: 'white'}} />
             )}
             style={{flex: 1}}
-            tabBar={TabBar}>
+            tabBar={TabBar}
+            backBehavior="firstRoute">
             <Tab.Screen name="Article" component={ArticleScreen} />
             <Tab.Screen name="Blog" component={BlogScreen} />
             <Tab.Screen name="Report" component={ReportScreen} />

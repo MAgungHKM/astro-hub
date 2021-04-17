@@ -6,6 +6,7 @@ import {FocusAwareStatusBar, MyView} from '../components';
 import {LogoFull, LogoSNAPI} from '../assets';
 import * as Animatable from 'react-native-animatable';
 import {AppContext} from '../contexts';
+import {REGULAR_TEXT} from '../assets/static/fonts';
 
 const {width, height} = Dimensions.get('window');
 const responsiveSize = width > height ? width * 0.4 : height * 0.4;
@@ -67,7 +68,7 @@ export default SplashScreen;
 const styles = StyleSheet.create({
   title: {
     color: 'white',
-    fontFamily: 'Atkinson-Hyperlegible-Regular',
+    fontFamily: REGULAR_TEXT,
     fontSize: 26,
     textAlign: 'center',
   },

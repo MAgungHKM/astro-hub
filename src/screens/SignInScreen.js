@@ -15,6 +15,7 @@ import * as Animatable from 'react-native-animatable';
 import Feather from 'react-native-vector-icons/Feather';
 import auth from '@react-native-firebase/auth';
 import {AppContext} from '../contexts';
+import {REGULAR_TEXT} from '../assets/static/fonts';
 
 const {width, height} = Dimensions.get('window');
 const responsiveSize = width > height ? width * 0.4 : height * 0.4;
@@ -364,7 +365,7 @@ export default SignInScreen;
 const styles = StyleSheet.create({
   title: {
     color: 'white',
-    fontFamily: 'Atkinson-Hyperlegible-Regular',
+    fontFamily: REGULAR_TEXT,
     fontSize: 26,
     textAlign: 'center',
   },

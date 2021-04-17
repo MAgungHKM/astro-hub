@@ -10,7 +10,9 @@ const ArticleScreen = ({navigation}) => {
   const {articles} = useContext(HomeContext);
 
   return (
-    <Animatable.View animation="fadeInUpBig" style={styles.container}>
+    <Animatable.View
+      animation="fadeInUpBig"
+      style={[styles.container, {height: articles.length === 0 ? 1000 : null}]}>
       <ListNews data={articles} navigation={navigation} />
     </Animatable.View>
   );
@@ -23,5 +25,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
     paddingBottom: 12,
+    marginTop: -12,
   },
 });

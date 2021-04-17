@@ -1,6 +1,8 @@
 import React from 'react';
 import {ImageBackground, StyleSheet, View} from 'react-native';
 import {Text, TouchableRipple} from 'react-native-paper';
+import {SECONDARY_COLOR} from '../assets/static/colors';
+import {BOLD_TEXT} from '../assets/static/fonts';
 
 const ListNews = ({navigation, data}) =>
   data.length > 0
@@ -15,6 +17,12 @@ const ListNews = ({navigation, data}) =>
             imageStyle={styles.image}
             resizeMode="cover"
             source={{uri: item.imageUrl}}>
+            <View style={styles.sourceContainer}>
+              <Text
+                style={[styles.title, {fontSize: 20, color: SECONDARY_COLOR}]}>
+                {item.newsSite}
+              </Text>
+            </View>
             <View style={styles.titleContainer}>
               <Text style={styles.title} numberOfLines={2}>
                 {item.title}
@@ -53,6 +61,15 @@ const styles = StyleSheet.create({
     color: 'white',
     textAlign: 'justify',
     fontSize: 18,
-    fontFamily: 'Atkinson-Hyperlegible-Bold',
+    fontFamily: BOLD_TEXT,
+  },
+  sourceContainer: {
+    marginTop: 12,
+    marginHorizontal: 12,
+    alignSelf: 'flex-end',
+    borderRadius: 16,
+    backgroundColor: 'whitesmoke',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
   },
 });

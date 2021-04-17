@@ -17,7 +17,6 @@ const Router = () => {
   const {currentUser} = useContext(AppContext);
 
   return (
-    // <LoadingIndicator />
     <Stack.Navigator headerMode="none">
       <Stack.Screen
         name="Splash"

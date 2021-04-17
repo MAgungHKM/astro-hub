@@ -9,59 +9,60 @@ import App from './src/App';
 import merge from 'deepmerge';
 import {PRIMARY_COLOR, PRIMARY_COLOR_DARK} from './src/assets/static/colors';
 import firebase from '@react-native-firebase/app';
+import {BOLD_TEXT, REGULAR_TEXT} from './src/assets/static/fonts';
 
 const fontConfig = {
   web: {
     regular: {
-      fontFamily: 'Atkinson-Hyperlegible-Regular',
+      fontFamily: REGULAR_TEXT,
       fontWeight: 'normal',
     },
     medium: {
-      fontFamily: 'Atkinson-Hyperlegible-Bold',
+      fontFamily: BOLD_TEXT,
       fontWeight: 'normal',
     },
     light: {
-      fontFamily: 'Atkinson-Hyperlegible-Regular',
+      fontFamily: REGULAR_TEXT,
       fontWeight: 'normal',
     },
     thin: {
-      fontFamily: 'Atkinson-Hyperlegible-Regular',
+      fontFamily: REGULAR_TEXT,
       fontWeight: 'normal',
     },
   },
   ios: {
     regular: {
-      fontFamily: 'Atkinson-Hyperlegible-Regular',
+      fontFamily: REGULAR_TEXT,
       fontWeight: 'normal',
     },
     medium: {
-      fontFamily: 'Atkinson-Hyperlegible-Bold',
+      fontFamily: BOLD_TEXT,
       fontWeight: 'normal',
     },
     light: {
-      fontFamily: 'Atkinson-Hyperlegible-Regular',
+      fontFamily: REGULAR_TEXT,
       fontWeight: 'normal',
     },
     thin: {
-      fontFamily: 'Atkinson-Hyperlegible-Regular',
+      fontFamily: REGULAR_TEXT,
       fontWeight: 'normal',
     },
   },
   android: {
     regular: {
-      fontFamily: 'Atkinson-Hyperlegible-Regular',
+      fontFamily: REGULAR_TEXT,
       fontWeight: 'normal',
     },
     medium: {
-      fontFamily: 'Atkinson-Hyperlegible-Bold',
+      fontFamily: BOLD_TEXT,
       fontWeight: 'normal',
     },
     light: {
-      fontFamily: 'Atkinson-Hyperlegible-Regular',
+      fontFamily: REGULAR_TEXT,
       fontWeight: 'normal',
     },
     thin: {
-      fontFamily: 'Atkinson-Hyperlegible-Regular',
+      fontFamily: REGULAR_TEXT,
       fontWeight: 'normal',
     },
   },

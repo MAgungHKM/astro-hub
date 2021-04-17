@@ -3,6 +3,7 @@ import {StyleSheet, View} from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import {TouchableRipple, Text} from 'react-native-paper';
 import {PRIMARY_COLOR} from '../../assets/static/colors';
+import {BOLD_TEXT} from '../../assets/static/fonts';
 
 const TabBar = ({state, descriptors, navigation, position}) => {
   const tabs = [];
@@ -95,7 +96,7 @@ const styles = StyleSheet.create({
   },
   itemText: {
     fontSize: 20,
-    fontFamily: 'Atkinson-Hyperlegible-Bold',
+    fontFamily: BOLD_TEXT,
     opacity: 1,
   },
 });
