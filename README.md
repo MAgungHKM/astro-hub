@@ -10,7 +10,7 @@
 
 ### Introduction
 
-Astro Hub, your everyday Space Related News provider. This Project is powered by [Spaceflight News API](https://www.spaceflightnewsapi.net) and [Firebase](https://firebase.google.com).
+Astro Hub, your everyday Space Related News provider. This Project is powered by [Spaceflight News API](https://www.spaceflightnewsapi.net), [Solar System openData](https://api.le-systeme-solaire.net/en/), and [Firebase](https://firebase.google.com).
 This project is built with React Native framework v0.64.
 
 ### Screenshots
