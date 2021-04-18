@@ -32,38 +32,104 @@ import {
   fetchPlanetOrMoon,
   fetchReport,
 } from '../../api/ApiService';
-import {HomeContext, HomeProvider, AppContext} from '../../contexts';
+import {
+  HomeContext,
+  HomeProvider,
+  AuthContext,
+  NavContext,
+} from '../../contexts';
+import {useIsFocused} from '@react-navigation/native';
 
 const Tab = createMaterialTopTabNavigator();
 
 const HEADER_HEIGHT = 235;
+const LIMIT = 50;
 
 const HomeScreen = ({navigation}) => (
   <HomeProvider>
-    <Home />
+    <Home navigation={navigation} />
   </HomeProvider>
 );
 
+const isCloseToBottom = ({layoutMeasurement, contentOffset, contentSize}) => {
+  const paddingToBottom = 20;
+  return (
+    layoutMeasurement.height + contentOffset.y >=
+    contentSize.height - paddingToBottom
+  );
+};
+
 const Home = ({navigation}) => {
-  const {currentUser} = useContext(AppContext);
+  const {currentUser} = useContext(AuthContext);
   const {
+    articlesSize,
+    blogsSize,
+    reportsSize,
     setArticles,
     setBlogs,
     setReports,
+    setArticlesSize,
+    setBlogsSize,
+    setReportsSize,
     pushArticles,
     pushBlogs,
     pushReports,
+    focusedTab,
   } = useContext(HomeContext);
+
+  const {navTarget} = useContext(NavContext);
+
+  const isFocused = useIsFocused();
+
+  const _container = useRef(null);
 
   const [statusBar, setStatusBar] = useState(false);
   const [scroll, setScroll] = useState(new Animated.Value(0));
   const [isLoading, setIsLoading] = useState(true);
   const [planetOrMoon, setPlanetOrMoon] = useState({});
+  const [initialization, setInitialization] = useState(true);
 
   const startLoading = () => setIsLoading(true);
   const stopLoading = () => setIsLoading(false);
 
   const onScroll = ({nativeEvent}) => {
+    if (isCloseToBottom(nativeEvent)) {
+      switch (focusedTab) {
+        case 'Article':
+          if (articlesSize < LIMIT) {
+            startLoading();
+            setArticlesSize(articlesSize + 5);
+            setTimeout(() => {
+              stopLoading();
+            }, 300);
+          }
+          break;
+
+        case 'Blog':
+          if (blogsSize < LIMIT) {
+            startLoading();
+            setBlogsSize(blogsSize + 5);
+            setTimeout(() => {
+              stopLoading();
+            }, 300);
+          }
+          break;
+
+        case 'Report':
+          if (reportsSize < LIMIT) {
+            startLoading();
+            setReportsSize(reportsSize + 5);
+            setTimeout(() => {
+              stopLoading();
+            }, 300);
+          }
+          break;
+
+        default:
+          break;
+      }
+    }
+
     let y = nativeEvent.contentOffset.y;
     setScroll(y);
     let scrollValue = y;
@@ -77,19 +143,25 @@ const Home = ({navigation}) => {
 
   const handleRefresh = () => {
     startLoading();
+    setArticlesSize(5);
+    setBlogsSize(5);
+    setReportsSize(5);
 
     fetchArticle().then(response => {
       setArticles(response.data);
+      setInitialization(false);
       stopLoading();
     });
 
     fetchBlog().then(response => {
       setBlogs(response.data);
+      setInitialization(false);
       stopLoading();
     });
 
     fetchReport().then(response => {
       setReports(response.data);
+      setInitialization(false);
       stopLoading();
     });
   };
@@ -102,6 +174,14 @@ const Home = ({navigation}) => {
     });
   }, []);
 
+  useEffect(() => {
+    if (navTarget !== 'Home') _container.current.fadeOutDownBig(500);
+    else if (!initialization)
+      setTimeout(() => {
+        _container.current.fadeInUpBig();
+      }, 850);
+  }, [navTarget]);
+
   return (
     <MyView style={{flex: 1}}>
       <LoadingIndicator isLoading={isLoading} />
@@ -110,7 +190,10 @@ const Home = ({navigation}) => {
         animated={true}
         backgroundColor={statusBar ? PRIMARY_COLOR_DARK : 'transparent'}
       />
-      <Animatable.View animation="fadeInUpBig" style={styles.container}>
+      <Animatable.View
+        animation="fadeInUpBig"
+        style={styles.container}
+        ref={_container}>
         <ScrollView
           style={[styles.container, {marginTop: 48 - StatusBar.currentHeight}]}
           onScroll={onScroll}
@@ -137,13 +220,21 @@ const Home = ({navigation}) => {
               numberOfLines={2}
               style={[styles.title, {marginTop: StatusBar.currentHeight + 28}]}>
               {greeting()},{' '}
-              {currentUser.displayName ? currentUser.displayName : 'loading...'}
+              {currentUser
+                ? currentUser.displayName
+                  ? currentUser.displayName
+                  : 'loading...'
+                : 'loading...'}
               !
             </Title>
             <Text style={[styles.title, {marginTop: 16, fontSize: 20}]}>
               Here's today's {!planetOrMoon.isPlanet ? 'Moon' : 'Planet'}
             </Text>
-            <Title style={[styles.title, {marginTop: 0, fontSize: 22}]}>
+            <Title
+              style={[
+                styles.title,
+                {marginTop: 0, fontSize: 22, width: '55%'},
+              ]}>
               {!planetOrMoon.name
                 ? 'Fetching Data'
                 : planetOrMoon.englishName === ''
@@ -158,7 +249,7 @@ const Home = ({navigation}) => {
             )}
             style={{flex: 1}}
             tabBar={TabBar}
-            backBehavior="firstRoute">
+            backBehavior="none">
             <Tab.Screen name="Article" component={ArticleScreen} />
             <Tab.Screen name="Blog" component={BlogScreen} />
             <Tab.Screen name="Report" component={ReportScreen} />

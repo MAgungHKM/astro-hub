@@ -14,6 +14,9 @@ import {
   TextInput,
   Caption,
   TouchableRipple,
+  Portal,
+  Dialog,
+  Button,
 } from 'react-native-paper';
 import {PRIMARY_COLOR, PRIMARY_COLOR_DARK} from '../assets/static/colors';
 import {FocusAwareStatusBar, LoadingIndicator, MyView} from '../components';
@@ -47,6 +50,10 @@ const SignUpScreen = ({navigation}) => {
   const [initialConfirmState, setInitialConfirmState] = useState(true);
   const [confirmSecret, setConfirmSecret] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [signUp, setSignUp] = useState(false);
+
+  const showSignUpDialog = () => setSignUp(true);
+  const hideSignUpDialog = () => setSignUp(false);
 
   const startLoading = () => setIsLoading(true);
   const stopLoading = () => setIsLoading(false);
@@ -171,14 +178,10 @@ const SignUpScreen = ({navigation}) => {
                       .then(() => {
                         auth()
                           .signOut()
-                          .then(() =>
-                            auth()
-                              .signInWithEmailAndPassword(email, password)
-                              .then(() => {
-                                stopLoading();
-                                navigation.replace('Home');
-                              }),
-                          );
+                          .then(() => {
+                            stopLoading();
+                            showSignUpDialog();
+                          });
                       });
                   });
               })
@@ -230,6 +233,14 @@ const SignUpScreen = ({navigation}) => {
     <MyView style={styles.container}>
       <FocusAwareStatusBar animated={true} hidden={false} />
       <LoadingIndicator isLoading={isLoading} />
+
+      <Portal>
+        <SignUpDialog
+          visible={signUp}
+          hideDialog={hideSignUpDialog}
+          handleSignIn={handleSignIn}
+        />
+      </Portal>
 
       <Animatable.View
         style={styles.content}
@@ -556,6 +567,35 @@ const SignUpScreen = ({navigation}) => {
   );
 };
 
+const SignUpDialog = ({visible, hideDialog, handleSignIn}) => (
+  <Dialog
+    visible={visible}
+    onDismiss={hideDialog}
+    style={{marginHorizontal: 48}}
+    theme={{roundness: 12}}>
+    <Dialog.Title style={{color: PRIMARY_COLOR_DARK}}>
+      Sign Up Successful
+    </Dialog.Title>
+    <Dialog.Content>
+      <Text style={styles.textDialog}>
+        Please Sign In with your registered account after this message
+      </Text>
+    </Dialog.Content>
+    <Dialog.Actions style={{marginHorizontal: 8}}>
+      <Button
+        onPress={() => {
+          hideDialog();
+          setTimeout(() => {
+            handleSignIn();
+          }, 500);
+        }}
+        labelStyle={{color: PRIMARY_COLOR, fontSize: 18}}>
+        OKAY
+      </Button>
+    </Dialog.Actions>
+  </Dialog>
+);
+
 const isEmpty = check => check.trim().length === 0;
 
 export default SignUpScreen;
@@ -612,5 +652,10 @@ const styles = StyleSheet.create({
     marginVertical: 16,
     borderBottomWidth: 1,
     borderBottomColor: 'darkgrey',
+  },
+  textDialog: {
+    textAlign: 'justify',
+    color: 'black',
+    fontSize: 18,
   },
 });

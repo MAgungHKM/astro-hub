@@ -14,7 +14,7 @@ import {LogoFull, LogoCredit} from '../assets';
 import * as Animatable from 'react-native-animatable';
 import Feather from 'react-native-vector-icons/Feather';
 import auth from '@react-native-firebase/auth';
-import {AppContext} from '../contexts';
+import {AuthContext} from '../contexts';
 import {REGULAR_TEXT} from '../assets/static/fonts';
 
 const {width, height} = Dimensions.get('window');
@@ -98,7 +98,7 @@ const SignInScreen = ({navigation}) => {
         .signInWithEmailAndPassword(email, password)
         .then(res => {
           stopLoading();
-          navigation.replace('Home');
+          navigation.replace('MainApp');
         })
         .catch(error => {
           stopLoading();

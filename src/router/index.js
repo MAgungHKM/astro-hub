@@ -5,16 +5,16 @@ import {
   SplashScreen,
   SignInScreen,
   SignUpScreen,
-  HomeScreen,
   DetailScreen,
+  MainAppScreen,
 } from '../screens';
-import {AppContext} from '../contexts';
+import {AuthContext} from '../contexts';
 import {LoadingIndicator} from '../components';
 
 const Stack = createStackNavigator();
 
 const Router = () => {
-  const {currentUser} = useContext(AppContext);
+  const {currentUser} = useContext(AuthContext);
 
   return (
     <Stack.Navigator headerMode="none">
@@ -33,7 +33,7 @@ const Router = () => {
         component={SignUpScreen}
         options={{animationEnabled: false}}
       />
-      <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Screen name="MainApp" component={MainAppScreen} />
       <Stack.Screen name="Detail" component={DetailScreen} />
     </Stack.Navigator>
   );

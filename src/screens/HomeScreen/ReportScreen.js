@@ -5,13 +5,19 @@ import {useContext} from 'react/cjs/react.development';
 import {HomeContext} from '../../contexts';
 import * as Animatable from 'react-native-animatable';
 import {ListNews} from '../../components';
+import {useIsFocused} from '@react-navigation/core';
 
 const ReportScreen = ({navigation}) => {
-  const {reports} = useContext(HomeContext);
+  const {reports, reportsSize, setFocusedTab} = useContext(HomeContext);
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    if (isFocused) setFocusedTab('Report');
+  }, [isFocused]);
 
   return (
     <Animatable.View animation="fadeInUpBig" style={styles.container}>
-      <ListNews data={reports} navigation={navigation} />
+      <ListNews data={reports} navigation={navigation} size={reportsSize} />
     </Animatable.View>
   );
 };

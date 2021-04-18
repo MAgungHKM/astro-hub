@@ -1,14 +1,14 @@
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import Router from './router';
-import {AppProvider} from './contexts';
+import {AuthProvider} from './contexts';
 
 const App = ({CombinedDefaultTheme}) => {
   return (
     <NavigationContainer theme={CombinedDefaultTheme}>
-      <AppProvider>
+      <AuthProvider>
         <Router />
-      </AppProvider>
+      </AuthProvider>
     </NavigationContainer>
   );
 };

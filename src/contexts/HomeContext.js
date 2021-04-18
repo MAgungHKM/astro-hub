@@ -8,6 +8,12 @@ export const HomeProvider = ({children}) => {
   const [blogs, setBlogs] = useState([]);
   const [reports, setReports] = useState([]);
 
+  const [articlesSize, setArticlesSize] = useState(5);
+  const [blogsSize, setBlogsSize] = useState(5);
+  const [reportsSize, setReportsSize] = useState(5);
+
+  const [focusedTab, setFocusedTab] = useState('Article');
+
   const pushArticles = data => setArticles(articles.concat(data));
 
   const pushBlogs = data => setBlogs(blogs.concat(data));
@@ -20,12 +26,20 @@ export const HomeProvider = ({children}) => {
         articles,
         blogs,
         reports,
+        articlesSize,
+        blogsSize,
+        reportsSize,
         pushArticles,
         pushBlogs,
         pushReports,
         setArticles,
         setBlogs,
         setReports,
+        setArticlesSize,
+        setBlogsSize,
+        setReportsSize,
+        focusedTab,
+        setFocusedTab,
       }}>
       {children}
     </HomeContext.Provider>

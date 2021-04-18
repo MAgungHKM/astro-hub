@@ -1,4 +1,12 @@
-import {AppContext, AppProvider} from './AppContext';
+import {AuthContext, AuthProvider} from './AuthContext';
 import {HomeContext, HomeProvider} from './HomeContext';
+import {NavContext, NavProvider} from './NavContext';
 
-export {AppContext, AppProvider, HomeContext, HomeProvider};
+export {
+  AuthContext,
+  AuthProvider,
+  HomeContext,
+  HomeProvider,
+  NavContext,
+  NavProvider,
+};

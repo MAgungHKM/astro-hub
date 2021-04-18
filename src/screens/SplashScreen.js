@@ -5,14 +5,14 @@ import {PRIMARY_COLOR_DARK} from '../assets/static/colors';
 import {FocusAwareStatusBar, MyView} from '../components';
 import {LogoFull, LogoSNAPI} from '../assets';
 import * as Animatable from 'react-native-animatable';
-import {AppContext} from '../contexts';
+import {AuthContext} from '../contexts';
 import {REGULAR_TEXT} from '../assets/static/fonts';
 
 const {width, height} = Dimensions.get('window');
 const responsiveSize = width > height ? width * 0.4 : height * 0.4;
 
 const SplashScreen = ({navigation}) => {
-  const {currentUser} = useContext(AppContext);
+  const {currentUser} = useContext(AuthContext);
 
   const _logo = useRef(null);
   const _snapi = useRef(null);
@@ -25,7 +25,7 @@ const SplashScreen = ({navigation}) => {
         _footer.current.fadeOutDownBig();
         _logo.current
           .bounceOut()
-          .then(() => navigation.replace(currentUser ? 'Home' : 'SignIn'));
+          .then(() => navigation.replace(currentUser ? 'MainApp' : 'SignIn'));
       });
     }, 2000);
   }, []);

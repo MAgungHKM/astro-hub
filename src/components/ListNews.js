@@ -4,9 +4,9 @@ import {Text, TouchableRipple} from 'react-native-paper';
 import {SECONDARY_COLOR} from '../assets/static/colors';
 import {BOLD_TEXT} from '../assets/static/fonts';
 
-const ListNews = ({navigation, data}) =>
+const ListNews = ({navigation, data, size}) =>
   data.length > 0
-    ? data.map((item, index) => (
+    ? data.slice(0, size).map((item, index) => (
         <TouchableRipple
           borderless
           key={index}
@@ -39,6 +39,7 @@ const styles = StyleSheet.create({
   item: {
     flex: 1,
     height: 240,
+    backgroundColor: 'lightgrey',
   },
   itemContainer: {
     marginVertical: 12,
@@ -48,6 +49,7 @@ const styles = StyleSheet.create({
   },
   image: {
     borderRadius: 16,
+    backgroundColor: 'lightgrey',
   },
   titleContainer: {
     marginBottom: 0,
