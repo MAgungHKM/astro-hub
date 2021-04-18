@@ -1,7 +1,6 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import {ImageBackground, ScrollView, StyleSheet, View} from 'react-native';
 import {Text, TouchableRipple} from 'react-native-paper';
-import {useContext} from 'react/cjs/react.development';
 import {HomeContext} from '../../contexts';
 import * as Animatable from 'react-native-animatable';
 import {ListNews} from '../../components';
