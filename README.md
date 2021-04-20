@@ -15,9 +15,9 @@ This project is built with React Native framework v0.64.
 
 ### Screenshots
 
-| Splash                                       | Sign In                                      | Sign Up                                      | Home                                   | Profile                                         |
-| -------------------------------------------- | -------------------------------------------- | -------------------------------------------- | -------------------------------------- | ----------------------------------------------- |
-| ![Splash](./screenshots/Splash.png 'Splash') | ![SignIn](./screenshots/SignIn.png 'SignIn') | ![SignUp](./screenshots/SignUp.png 'SignUp') | ![Home](./screenshots/Home.png 'Home') | ![Profile](./screenshots/Profile.png 'Profile') |
+| Splash                                       | Sign In                                      | Sign Up                                      | Home                                   | Detail                                       | Profile                                         |
+| -------------------------------------------- | -------------------------------------------- | -------------------------------------------- | -------------------------------------- | -------------------------------------------- | ----------------------------------------------- |
+| ![Splash](./screenshots/Splash.png 'Splash') | ![SignIn](./screenshots/SignIn.png 'SignIn') | ![SignUp](./screenshots/SignUp.png 'SignUp') | ![Home](./screenshots/Home.png 'Home') | ![Detail](./screenshots/Detail.png 'Detail') | ![Profile](./screenshots/Profile.png 'Profile') |
 
 ### Demo
 
